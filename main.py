@@ -3,7 +3,6 @@ Sources:
 - ##youtube##
 - ##rss##
 - ##letterboxd##
-- ##reddit##
 - instagram
 - bluesky
 - twitter
@@ -175,9 +174,9 @@ class WikipediaFeatured(RSS):
                 self.draw_article(pdf, article)
 
 class Letterboxd(RSS):
-    def __init__(self, users):
+    def __init__(self):
         self.omdb_key = global_config['Letterboxd']['omdb_key']
-        self.users = users
+        self.users = global_config['Letterboxd']['users'].split(',')
 
     def get_movie_details(self, title, year):
         data = {'Plot': '', 'Director': '', 'Actors': ''}
@@ -232,6 +231,8 @@ class Letterboxd(RSS):
             pdf.cell(0, None, new_x='LMARGIN', new_y='NEXT')
             if pdf.y > start_y:
                 pdf.y = max(pdf.y, start_y+img_result.rendered_height+1)
+            else:
+                pdf.y = max(pdf.y, pdf.t_margin+img_result.rendered_height+1)
             
 
 
@@ -252,7 +253,7 @@ class Magazine:
             pdf.add_page()
             feed.draw_page(pdf, (datetime.now(timezone.utc)-timedelta(weeks=1)))
 
-        pdf.output('test.pdf')
+        pdf.output('internetsupermagazine.pdf')
 
 
 class PDF(fpdf.FPDF):
@@ -283,12 +284,10 @@ class PDF(fpdf.FPDF):
 
 #vid.video_comic()
 
-mag = Magazine([Letterboxd(['embassyrow', 'iiingriddd', 'dav1dthedancer', 'jammesros', '_scarl3tt', 'gracepedatrican', 'lucythatone', 'notgoodatchess'])])
+mag = Magazine([Letterboxd()])
                 #WikipediaFeatured()]) 
 mag.generate_magazine()
 
-#rss = Reddit()
-#rss.subreddits = ['twosentencehorror']
 #print(rss.get_new_articles(datetime.now(timezone.utc)-timedelta(hours=48)))
 
 
