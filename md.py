@@ -1,10 +1,17 @@
 from html.parser import HTMLParser
 
-class Image:
+class Element:
+    def is_image(self):
+        return type(self) == Image
+
+    def is_text(self):
+        return type(self) == Text
+
+class Image(Element):
     def __init__(self, url):
         self.url = url
 
-class Text:
+class Text(Element):
     def __init__(self, md):
         self.md = md
 

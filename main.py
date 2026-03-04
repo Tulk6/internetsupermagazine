@@ -90,8 +90,8 @@ class Feed:
         pass
 
 class RSS:
-    def __init__(self, urls):
-        self.urls = urls
+    def __init__(self):
+        self.urls = global_config['RSS']['feeds'].split(',')
 
     def published_after(self, published, since):
         date_published = datetime.fromtimestamp(time.mktime(published), tz=timezone.utc)#datetime.strptime(published, f'%a, %d %b %Y %H:%M:%S %z')
@@ -139,7 +139,12 @@ class RSS:
 
         for article in articles:
             pdf.cell(0, None, article['title'], new_x='LEFT', new_y='NEXT', markdown=True)
-            pdf.multi_cell(0, None, article['content'], new_x='LEFT', new_y='NEXT', markdown=True)
+            for element in article['document'].content:
+                if element.is_text():
+                    pdf.multi_cell(0, None, element.md, new_x='LEFT', new_y='NEXT', markdown=True)
+                elif element.is_image():
+                    pdf.image(element.url, keep_aspect_ratio=True, w=pdf.epw, h=pdf.eph/10)
+                
 
 
 class WikipediaFeatured(RSS):
@@ -284,7 +289,7 @@ class PDF(fpdf.FPDF):
 
 #vid.video_comic()
 
-mag = Magazine([Letterboxd()])
+mag = Magazine([RSS()])
                 #WikipediaFeatured()]) 
 mag.generate_magazine()
 
